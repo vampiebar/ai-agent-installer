@@ -10,7 +10,7 @@ fi
 # Ensure 'dialog' is installed; if not, install it
 if ! command -v dialog &>/dev/null; then
     echo "Dialog utility not found. Installing dialog..."
-    apt-get update -y && apt-get install -y dialog \
+    apt-get update -y && apt-get install -y dialog sudo \
         || { echo "Error: Failed to install 'dialog' package."; exit 1; }
 fi
 
