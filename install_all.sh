@@ -8,7 +8,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Ensure 'dialog' is installed; if not, install it
-apt-get update -y && apt-get install -y sudo vim nano
+apt-get update -y && apt-get install -y sudo vim nano net-tools
 if ! command -v dialog &>/dev/null; then
     echo "Dialog utility not found. Installing dialog..."
     apt-get update -y && apt-get install -y dialog \
