@@ -19,8 +19,8 @@ fi
 CHOICES=$(dialog --stdout --clear \
     --backtitle "P123 AI Agent Installer" --title "Installation Options" \
     --checklist "Select components to install:" 15 60 5 \
-    "AIAGENTGW" "Install AI AGENT GW" ON \
-    "AITRAININGSUBSYSTEM" "Install P123 Training Subsystem" ON \
+    "AIAGENTGW" "Install P123 AI AGENT GW" ON \
+    "AITRASUBS" "Install P123 Training Subsystem" ON \
     "CONFDOMAIN" "Configure Domain" ON \
     )
 
@@ -48,7 +48,7 @@ if echo "$CHOICES" | grep -qw "AIAGENTGW"; then
     fi
 fi
 
-if echo "$CHOICES" | grep -qw "AITRAININGSUBSYSTEM"; then
+if echo "$CHOICES" | grep -qw "AITRASUBS"; then
     echo "Install P123 AI Training Subsystem..."
     bash modules/install_ai_training_subsystem.sh
     if [ $? -eq 0 ]; then
