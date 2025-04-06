@@ -1,0 +1,13 @@
+[Unit]
+Description=P123 AI Agent Web Service (via screen)
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/ai-agent-gw-2
+ExecStart=/usr/bin/screen -dmS P123_AI_WS /root/ai-agent-gw-2/build/ollama_drogon
+Restart=always
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+[Install]
+WantedBy=multi-user.target

@@ -33,7 +33,6 @@ echo "✅ Drogon installation complete."
 
 echo "📁 Cloning AI Agent GW into $TARGET_DIR..."
 
-# Clone the develop branch only if it hasn't already been cloned
 if [ -d "$TARGET_DIR" ]; then
     echo "Directory already exists: $TARGET_DIR"
     echo "Pulling latest changes from develop branch..."
@@ -50,3 +49,17 @@ cd "$TARGET_DIR"
 cmake -S . -B build
 cmake --build build -j$(nproc)
 echo "✅ Build completed successfully."
+
+echo "🎬 Launching AI Agent GW via screen..."
+
+# Ensure 'screen' is installed
+if ! command -v screen &>/dev/null; then
+    echo "Installing 'screen' utility..."
+    sudo apt install -y screen
+fi
+
+# Start app in screen session
+screen -dmS "P123_AI_WS" ./build/ollama_drogon
+
+echo "✅ AI Agent GW is now running in screen session: P123_AI_WS"
+echo "👉 To attach: screen -r P123_AI_WS"
