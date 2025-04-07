@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Determine the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
@@ -11,18 +10,15 @@ TARGET_DIR="$BASE_DIR/ai-agent-gw-2"
 echo "🔧 Installing Drogon Framework (latest)..."
 sudo apt update
 sudo apt install -y git cmake g++ libjsoncpp-dev libssl-dev zlib1g-dev uuid-dev \
-    libsqlite3-dev libmariadb-dev libpq-dev libhiredis-dev libcurl4-openssl-dev
+    libsqlite3-dev libmariadb-dev libpq-dev libhiredis-dev libcurl4-openssl-dev screen
+
+echo "📦 Installing Ollama..."
+bash "$SCRIPT_DIR/install_ollama_latest.sh"
 
 echo "📦 Preparing to clone Drogon from GitHub..."
-
-if [ -d "drogon" ]; then
-    echo "⚠️  Existing drogon directory found. Removing it..."
-    rm -rf drogon
-fi
-
+rm -rf drogon
 git clone --recurse-submodules https://github.com/drogonframework/drogon.git
-cd drogon
-mkdir -p build && cd build
+cd drogon && mkdir -p build && cd build
 cmake ..
 make -j$(nproc)
 sudo make install
@@ -32,34 +28,32 @@ rm -rf drogon
 echo "✅ Drogon installation complete."
 
 echo "📁 Cloning AI Agent GW into $TARGET_DIR..."
-
 if [ -d "$TARGET_DIR" ]; then
-    echo "Directory already exists: $TARGET_DIR"
-    echo "Pulling latest changes from develop branch..."
+    echo "Directory exists. Updating..."
     git -C "$TARGET_DIR" checkout develop
     git -C "$TARGET_DIR" pull origin develop
 else
     git clone --branch develop "$REPO_URL" "$TARGET_DIR"
 fi
 
-echo "✅ AI Agent GW cloned into $TARGET_DIR"
-
 echo "🛠 Building AI Agent GW..."
 cd "$TARGET_DIR"
 cmake -S . -B build
 cmake --build build -j$(nproc)
-echo "✅ Build completed successfully."
+echo "✅ Build completed."
 
-echo "🎬 Launching AI Agent GW via screen..."
-
-# Ensure 'screen' is installed
-if ! command -v screen &>/dev/null; then
-    echo "Installing 'screen' utility..."
-    sudo apt install -y screen
-fi
-
-# Start app in screen session
+echo "🎬 Starting AI Agent GW in screen session..."
 screen -dmS "P123_AI_WS" ./build/ollama_drogon
 
-echo "✅ AI Agent GW is now running in screen session: P123_AI_WS"
-echo "👉 To attach: screen -r P123_AI_WS"
+echo "🛠 Installing systemd service..."
+SERVICE_FILE="p123-ai-ws.service"
+TARGET_PATH="/etc/systemd/system/$SERVICE_FILE"
+sudo cp "$SCRIPT_DIR/$SERVICE_FILE" "$TARGET_PATH"
+sudo chmod 644 "$TARGET_PATH"
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable p123-ai-ws
+sudo systemctl start p123-ai-ws
+
+echo "✅ systemd service 'p123-ai-ws' installed and running"
+echo "👉 Attach with: screen -r P123_AI_WS"
