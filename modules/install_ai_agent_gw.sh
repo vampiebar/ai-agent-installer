@@ -45,20 +45,19 @@ echo "✅ Build completed."
 echo "🎬 Starting AI Agent GW in screen session..."
 screen -dmS "P123_AI_WS" ./build/ollama_drogon
 
-# Safe systemd check
-if pidof systemd &> /dev/null; then
-    echo "🛠 Installing systemd service..."
-    SERVICE_FILE="p123-ai-ws.service"
-    TARGET_PATH="/etc/systemd/system/$SERVICE_FILE"
-    sudo cp "$SCRIPT_DIR/$SERVICE_FILE" "$TARGET_PATH"
-    sudo chmod 644 "$TARGET_PATH"
-    sudo systemctl daemon-reexec
-    sudo systemctl daemon-reload
-    sudo systemctl enable p123-ai-ws
-    sudo systemctl start p123-ai-ws
-    echo "✅ systemd service 'p123-ai-ws' installed and running"
-else
-    echo "⚠️ Skipping systemd install: systemd is not the init system."
-fi
+# if pidof systemd &> /dev/null; then
+#     echo "🛠 Installing systemd service..."
+#     SERVICE_FILE="p123-ai-ws.service"
+#     TARGET_PATH="/etc/systemd/system/$SERVICE_FILE"
+#     sudo cp "$SCRIPT_DIR/$SERVICE_FILE" "$TARGET_PATH"
+#     sudo chmod 644 "$TARGET_PATH"
+#     sudo systemctl daemon-reexec
+#     sudo systemctl daemon-reload
+#     sudo systemctl enable p123-ai-ws
+#     sudo systemctl start p123-ai-ws
+#     echo "✅ systemd service 'p123-ai-ws' installed and running"
+# else
+#     echo "⚠️ Skipping systemd install: systemd is not the init system."
+# fi
 
 echo "👉 Attach with: screen -r P123_AI_WS"
